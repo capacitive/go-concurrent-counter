@@ -14,7 +14,10 @@ type Counter struct {
 	x   int
 }
 
-var locker Counter
+var locker = Counter{
+	x: 0,
+	mu: sync.Mutex{},
+}
 
 func get(writer http.ResponseWriter, req *http.Request) {
 	locker.mu.Lock()
@@ -55,10 +58,6 @@ func dec(_ http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
-	locker = Counter{
-		x: 0,
-		mu: sync.Mutex{},
-	}
 	http.HandleFunc("/counter", get)
 	http.HandleFunc("/counter/set", set)
 	http.HandleFunc("/increment", inc)

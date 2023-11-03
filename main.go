@@ -40,9 +40,17 @@ func set(writer http.ResponseWriter, req *http.Request) {
 }
 
 func inc(_ http.ResponseWriter, _ *http.Request) {
+	// time.Sleep(1 * time.Second)
 	locker.mu.Lock()
 	locker.x = locker.x + 1
 	log.Printf("counter incremented to: %v", locker.x)
+	locker.mu.Unlock()
+}
+
+func dec(_ http.ResponseWriter, _ *http.Request) {
+	locker.mu.Lock()
+	locker.x = locker.x - 1
+	log.Printf("counter decremented to: %v", locker.x)
 	locker.mu.Unlock()
 }
 
@@ -54,6 +62,7 @@ func main() {
 	http.HandleFunc("/counter", get)
 	http.HandleFunc("/counter/set", set)
 	http.HandleFunc("/increment", inc)
+	http.HandleFunc("/decrement", dec)
 
 	port := 9095
 	if len(os.Args) > 1 {
